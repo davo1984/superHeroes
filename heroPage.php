@@ -35,8 +35,57 @@
 
     <div class="row">
       <div class="col-3 card card-body">
-          <?php echo $bio; ?>
+        <?php echo $bio; ?>
       </div>
+
+      <div class="col-3">
+        <img src="<?php echo $img ?>" class="img-fluid" alt="Responsive image">
+      </div>
+
+      <div class="col-3 card card-body">
+        <!-- TODO place friends list -->
+        <div class="card-body">
+          <h5 class="card-title">Friends</h5>
+          <p class="card-text"><?php echo $about; ?></p>
+
+          <?php
+          // SELECT Orders.OrderID, Customers.CustomerName, Orders.OrderDate
+          // FROM Orders
+          // INNER JOIN Customers ON Orders.CustomerID=Customers.CustomerID;
+          $sql = "SELECT ability 
+                  FROM abilities 
+                  INNER JOIN ability_hero ON abilities.id=abilities_hero.ability_id
+                  INNER JOIN heroes ON abilities.hero_id=heroes.id 
+                  WHERE heroes.id=" . $id;
+          
+          $abilityResult = $conn->query($sql);
+          
+          if ($result->num_rows > 0) {
+            while ($abilityRow = $result->fetch_assoc()) {
+              $ability = $abilityRow["ability"];
+          ?>
+              <li><?php $ability ?></li>
+
+            <?php
+            }
+          } else {
+            ?>
+            <li>Super Villains have no friends!</li>
+          <?php
+          }
+          ?>
+        </div>
+      </div>
+
+      <div class="col-3 card card-body">
+        <!-- TODO place enemies list -->
+        <div class="card-body">
+          <h5 class="card-title">Enemies</h5>
+          <p class="card-text"><?php echo $about; ?></p>
+          <a href='<?php echo $heroPage; ?>' class="btn btn-primary">About <?php echo $name; ?></a>
+        </div>
+      </div>
+
     </div>
 
 

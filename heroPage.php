@@ -10,13 +10,15 @@
   <?php
   require "dbConnect.php";
   require "header.php";
+
   $id = $_GET["id"];
   $sql = "SELECT * FROM heroes WHERE id = " . $id;
   $result = $conn->query($sql);
+  $heroForm = './heroForm.php?id=' . $id;
 
   if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
-    $hero = "hero.php?id=" . $row["id"];
+    $hero = "./heroPage.php?id=" . $row["id"];
     $name = $row["name"];
     $bio =  $row["biography"];
     $img =  $row["image_url"];
@@ -34,60 +36,110 @@
     </div>
 
     <div class="row">
-      <div class="col-3 card card-body">
-        <?php echo $bio; ?>
-      </div>
-
-      <div class="col-3">
-        <img src="<?php echo $img ?>" class="img-fluid" alt="Responsive image">
+      <div class="col-3 card">
+        <div class="card-body">
+          <img class="card-img-bottom" src="<?php echo $img ?>" alt="Image of Our Hero">
+          <p>
+            <?php echo $bio; ?>
+          </p>
+          <a href='<?php echo $heroForm; ?>' class="btn btn-primary">Edit Bio</a>
+        </div>
       </div>
 
       <div class="col-3 card card-body">
         <!-- TODO place friends list -->
         <div class="card-body">
-          <h5 class="card-title">Friends</h5>
-          <p class="card-text"><?php echo $about; ?></p>
-
-          <?php
-          // SELECT Orders.OrderID, Customers.CustomerName, Orders.OrderDate
-          // FROM Orders
-          // INNER JOIN Customers ON Orders.CustomerID=Customers.CustomerID;
-          $sql = "SELECT ability 
-                  FROM abilities 
-                  INNER JOIN ability_hero ON abilities.id=abilities_hero.ability_id
-                  INNER JOIN heroes ON abilities.hero_id=heroes.id 
-                  WHERE heroes.id=" . $id;
-          
-          $abilityResult = $conn->query($sql);
-          
-          if ($result->num_rows > 0) {
-            while ($abilityRow = $result->fetch_assoc()) {
-              $ability = $abilityRow["ability"];
-          ?>
-              <li><?php $ability ?></li>
+          <h5 class="card-title">Abilities</h5>
+          <p class="card-text">
 
             <?php
-            }
-          } else {
+            $sql = "SELECT ability 
+                    FROM abilities 
+                    INNER JOIN ability_hero ON abilities.id=ability_hero.ability_id 
+                    INNER JOIN heroes ON ability_hero.hero_id=heroes.id 
+                    WHERE heroes.id=" . $id;
+
+            $abilityResult = $conn->query($sql);
+
+            if ($abilityResult->num_rows > 0) {
+              $ability = '';
+              while ($abilityRow = $abilityResult->fetch_assoc()) {
+                echo "<li>$abilityRow[ability]</li>";
+              }
+            } else {
             ?>
-            <li>Super Villains have no friends!</li>
-          <?php
-          }
-          ?>
+              <li>A Powerless Superhero!?</li>
+            <?php
+            }
+
+            ?>
+          </p>
+        </div>
+      </div>
+      <div class="col-3 card card-body">
+
+        <div class="card-body">
+          <h5 class="card-title">Friends</h5>
+          <p class="card-text">
+            <?php
+            $sql = "SELECT DISTINCT name AS friend FROM relationships 
+                INNER JOIN heroes ON heroes.id=relationships.hero1_id || heroes.id=relationships.hero2_id 
+                INNER JOIN relationship_types ON relationships.type_id=relationship_types.id 
+                WHERE (relationships.hero1_id=$id || relationships.hero2_id=$id) && relationship_types.id=1 
+                ORDER BY name ASC ";
+
+            $friendsResult = $conn->query($sql);
+
+            if ($friendsResult->num_rows > 0) {
+              $ability = '';
+              while ($friendsRow = $friendsResult->fetch_assoc()) {
+                if ($name != $friendsRow['friend']) {
+                  echo "<li>$friendsRow[friend]</li>";
+                }
+              }
+            } else {
+            ?>
+              <li>Supervillans have no friends!</li>
+            <?php
+            }
+            ?>
+          </p>
+          <a href='<?php echo $heroPage; ?>' class="btn btn-primary">Edit Friends</a>
         </div>
       </div>
 
       <div class="col-3 card card-body">
-        <!-- TODO place enemies list -->
+
         <div class="card-body">
           <h5 class="card-title">Enemies</h5>
-          <p class="card-text"><?php echo $about; ?></p>
-          <a href='<?php echo $heroPage; ?>' class="btn btn-primary">About <?php echo $name; ?></a>
+          <p class="card-text">
+            <?php
+            $sql = "SELECT DISTINCT name AS friend FROM relationships 
+                INNER JOIN heroes ON heroes.id=relationships.hero1_id || heroes.id=relationships.hero2_id 
+                INNER JOIN relationship_types ON relationships.type_id=relationship_types.id 
+                WHERE (relationships.hero1_id=$id || relationships.hero2_id=$id) && relationship_types.id=2 
+                ORDER BY name ASC ";
+
+            $friendsResult = $conn->query($sql);
+
+            if ($friendsResult->num_rows > 0) {
+              $ability = '';
+              while ($friendsRow = $friendsResult->fetch_assoc()) {
+                if ($name != $friendsRow['friend']) {
+                  echo "<li>$friendsRow[friend]</li>";
+                }
+              }
+            } else {
+            ?>
+              <li>He\'s so nice even Supervillans like him!</li>
+            <?php
+            }
+            ?>
+          </p>
+          <a href='<?php echo $heroPage; ?>' class="btn btn-primary">Edit Enemies</a>
         </div>
       </div>
-
     </div>
-
 
     <!-- //BEFORE this -->
     <?php

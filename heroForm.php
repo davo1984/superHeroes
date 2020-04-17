@@ -22,27 +22,36 @@
     $name = $row["name"];
     $bio =  $row["biography"];
     $img =  $row["image_url"];
+    $about_me = $row["about_me"];
   } else {
     echo "0 results for id=" . $id;
   }
   // $data = getHeroData($id);
-  $_SESSION['heroes'][$id] = $row;  // originally was $data vice $row
-  echo $result->num_rows . " records fetched for id=" . $id . ' name=' . $name;
+  // $_SESSION['heroes'][$id] = $row;  // originally was $data vice $row
+  // echo $result->num_rows . " records fetched for id=" . $id . ' name=' . $name;
   ?>
   <!-- //AFTER this -->
 
-  <form action="./editHero.php?id=<?php echo $id ?>">
-    <label for="name">Name:</label><br>
-    <input type="text" id="name" name="name" value="<?php echo $name ?>"><br>
-    <label for="aboutMe">About Me:</label><br>
-    <input type="text" id="aboutMe" name="aboutMe" value="<?php echo $about_me ?>"><br>
-    <label for="bio">Biography:</label><br>
-    <input type="text" id="bio" name="bio" value="<?php echo $bio ?>"><br><br>
-    <label for="img">Image URL:</label><br>
-    <input type="text" id="img" name="img" value="<?php echo $img ?>"><br><br>
-    <input type="submit" value="Submit">
-  </form>
+  <div class="container pl-5">
+    <div class="row">
+      <div class='text-center mt-5 mb-4'>
+        <form action="./editHero.php" method='post'>
+          <input type="hidden" id="id" name="id" value="<?php echo $id ?>"><br>
+          <input type="hidden" id="method" name="method" value="updateHero"><br>
+          <label for="name">Name:</label><br>
+          <input type="text" id="name" name="name" value="<?php echo $name ?>"><br>
+          <label for="aboutMe">About Me:</label><br>
+          <input type="text" id="aboutMe" name="aboutMe" value="<?php echo $about_me ?>"><br>
+          <label for="bio">Biography:</label><br>
+          <input type="text" id="bio" name="bio" value="<?php echo $bio ?>"><br><br>
+          <label for="img">Image URL:</label><br>
+          <input type="text" id="img" name="img" value="<?php echo $img ?>"><br><br>
+          <input type="submit" value="Submit">
+        </form>
 
+      </div>
+    </div>
+  </div>
 
   <!-- //BEFORE this -->
   <?php
